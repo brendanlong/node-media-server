@@ -1,0 +1,11 @@
+{
+  "name": "simple-media-server",
+  "version": "0.0.0",
+  "description": "A simple server for a single folder",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brendan Long <b.long@cablelabs.com>",
+  "license": "BSD"
+}
