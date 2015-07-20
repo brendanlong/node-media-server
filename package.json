@@ -7,5 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Brendan Long <b.long@cablelabs.com>",
-  "license": "BSD"
+  "license": "BSD",
+  "dependencies": {
+    "express": "^4.13.1",
+    "yargs": "^3.15.0"
+  }
 }
