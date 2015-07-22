@@ -87,6 +87,16 @@ app.get("/video/:file", function(req, res) {
     res.status(200);
     stream.pipe(res);
 });
+app.delete("/content/:file", function(req, res) {
+    var file = req.params.file;
+    fs.unlink(path.join(args.directory, file), function(err) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+});
 app.use("/content", express.static(args.directory));
 app.use("/static", express.static(path.join(thisPath, "static")));
 app.listen(args.port);
