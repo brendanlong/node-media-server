@@ -17,6 +17,10 @@ if (typeof String.prototype.startsWith != 'function') {
     };
 }
 
+function titleFromPath(file) {
+    return path.basename(file, path.extname(file)).replace(/_/g, " ");
+}
+
 var args = yargs
     .option("d", {
         alias: "directory",
@@ -52,13 +56,20 @@ app.get("/", function(req, res) {
         var contentList = [];
         for (var i = 0; i < files.length; ++i) {
             var file = files[i];
-            var type = mime.lookup(file);
-            if (!type.startsWith("video/")) {
+            var type = mime.lookup(file).split("/")[0];
+            var tag = null;
+            if (type == "audio" || type == "video") {
+                tag = type;
+            } else if (type == "image") {
+                tag = "img";
+            } else {
                 continue;
             }
             var content = {
-                title: path.basename(file, path.extname(file)),
-                link: "/video/" + file
+                title: titleFromPath(file),
+                link: "/" + type + "/" + file,
+                path: "/content/" + file,
+                tag: tag
             };
             contentList.push(content);
         }
@@ -70,7 +81,7 @@ app.get("/", function(req, res) {
 app.get("/video/:file", function(req, res) {
     var file = req.params.file;
     var stream = mu.compileAndRender("video.html", {
-        title: path.basename(file, path.extname(file)),
+        title: titleFromPath(file),
         path: "/content/" + file
     });
     res.status(200);

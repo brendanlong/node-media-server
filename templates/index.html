@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8">
   <title>Recorded Content</title>
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
+  <link rel="stylesheet" href="/static/css/styles.css?v=1.0">
 </head>
 <body>
   <h2>Recorded Content</h2>
   {{#content}}
-  <a href="{{link}}">
+  <a href="{{link}}" class="content">
     <h3>{{title}}</h3>
+    <{{tag}} src="{{path}}"/>
   </a>
   {{/content}}
 </body>
