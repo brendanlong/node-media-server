@@ -11,6 +11,12 @@ var yargs = require("yargs");
 var thisPath = path.dirname(__filename);
 mu.root = path.join(thisPath, "templates");
 
+if (typeof String.prototype.startsWith != 'function') {
+    String.prototype.startsWith = function (str){
+        return this.slice(0, str.length) == str;
+    };
+}
+
 var args = yargs
     .option("d", {
         alias: "directory",
@@ -46,11 +52,14 @@ app.get("/", function(req, res) {
         var contentList = [];
         for (var i = 0; i < files.length; ++i) {
             var file = files[i];
+            var type = mime.lookup(file);
+            if (!type.startsWith("video/")) {
+                continue;
+            }
             var content = {
                 title: path.basename(file, path.extname(file)),
                 link: "/video/" + file
             };
-            var type = mime.lookup(file);
             contentList.push(content);
         }
         var stream = mu.compileAndRender("index.html", {content: contentList});
