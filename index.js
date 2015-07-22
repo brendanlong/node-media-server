@@ -1,6 +1,9 @@
+"use strict";
+var async = require("async");
 var express = require("express");
 var fs = require("fs");
 var http = require("http");
+var path = require("path");
 var yargs = require("yargs");
 
 var args = yargs
@@ -23,8 +26,23 @@ var args = yargs
     .argv;
 
 var app = express();
-app.use(express.static(args.directory));
 app.get("/", function(req, res) {
-    res.send("index!");
+    async.waterfall([
+        fs.readdir.bind(fs, args.directory),
+        function(files, callback) {
+            async.filter(files, function(file, callback) {
+                var fullPath = path.join(args.directory, file);
+                fs.stat(fullPath, function(err, stats) {
+                    callback(!err && stats.isFile());
+                });
+            }, callback);
+        }
+    ], function(err, results) {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.status(200).send("yay" + results);
+    });
 });
+app.use(express.static(args.directory));
 app.listen(args.port);
