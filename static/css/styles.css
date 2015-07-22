@@ -21,6 +21,10 @@ a {
     text-align: center;
 }
 
+.content video {
+    width: 100%;
+}
+
 .mainvideo {
     position: absolute;
     left:0;
