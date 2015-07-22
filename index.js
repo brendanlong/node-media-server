@@ -48,7 +48,7 @@ app.get("/", function(req, res) {
             var file = files[i];
             var content = {
                 title: path.basename(file, path.extname(file)),
-                link: "/video?" + file
+                link: "/video/" + file
             };
             var type = mime.lookup(file);
             contentList.push(content);
@@ -57,6 +57,15 @@ app.get("/", function(req, res) {
         res.status(200);
         stream.pipe(res);
     });
+});
+app.get("/video/:file", function(req, res) {
+    var file = req.params.file;
+    var stream = mu.compileAndRender("video.html", {
+        title: path.basename(file, path.extname(file)),
+        path: "/content/" + file
+    });
+    res.status(200);
+    stream.pipe(res);
 });
 app.use("/content", express.static(args.directory));
 app.use("/static", express.static(path.join(thisPath, "static")));
