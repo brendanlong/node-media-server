@@ -4,22 +4,98 @@
   <meta charset="utf-8">
   <title>Recorded Content</title>
   <link rel="stylesheet" href="/static/css/styles.css?v=1.0">
-  <script>
-    function deleteContent(node, path) {
-        var req = new XMLHttpRequest();
-        req.open("delete", path);
-        req.send();
-        node.remove();
+  <script src="/static/mousetrap.min.js"></script>
+  <script><!--
+    var currentItem = null;
+    var items = [];
+    
+    function setSelected(index) {
+        if (index >= items.length) {
+            console.log("Index " + index + " is out of range");
+            return;
+        }
+        if (currentItem !== null && currentItem < items.length) {
+            items[currentItem].classList.remove("selected");
+        }
+        currentItem = index;
+        var current = items[currentItem];
+        current.classList.add("selected");
+        current.scrollIntoView(true);
     }
-  </script>
+    
+    function goDown(e) {
+        e.preventDefault();
+        var next = currentItem + 1;
+        if (next >= items.length) {
+            next = 0;
+        }
+        setSelected(next);
+    }
+    
+    function goUp(e) {
+        e.preventDefault();
+        var next = currentItem - 1;
+        if (next < 0) {
+            next = items.length - 1;
+        }
+        setSelected(next);
+    }
+    
+    function goToContent(e) {
+        if (currentItem !== null && currentItem < items.length) {
+            items[currentItem].getElementsByTagName("a")[0].click();
+        }
+    }
+    
+    function deleteSelected(e) {
+        e.preventDefault();
+        if (currentItem == null || currentItem > items.length) {
+            return;
+        }
+        var item = items[currentItem];
+        var button = item.getElementsByClassName("delete-button")[0];
+        button.click();
+    }
+
+    window.addEventListener("load", function() {
+        var deleteButtons = document.getElementsByClassName("delete-button");
+        for (var i = 0; i < deleteButtons.length; ++i) {
+            deleteButtons[i].addEventListener("click", function(event) {
+                var button = event.target;
+                var req = new XMLHttpRequest();
+                req.open("delete", button.value);
+                req.send();
+                var parent = button.parentNode;
+                parent.remove();
+                items.splice(items.indexOf(parent), 1);
+                if (currentItem > 0) {
+                    setSelected(currentItem - 1);
+                } else {
+                    setSelected(0);
+                }
+            });
+        }
+        items.push.apply(items, document.getElementsByClassName("content"));
+        if (items.length > 0) {
+            setSelected(0);
+        }
+    });
+
+    Mousetrap.bind("down", goDown);
+    Mousetrap.bind("up", goUp);
+    Mousetrap.bind("enter", goToContent);
+    Mousetrap.bind("d", deleteSelected);
+  --></script>
 </head>
 <body>
   <h2>Recorded Content</h2>
   {{#content}}
   <div class="content">
-    <h3><a href="{{link}}">{{title}}</a></h3>
-    <a href="{{link}}"><{{tag}} src="{{path}}"/></a><br/>
-    <button onclick="deleteContent(this.parentNode, '{{path}}')">Delete</a>
+    <a href="{{link}}">
+      <h3>{{title}}</h3>
+      <{{tag}} src="{{path}}"></{{tag}}>
+    </a><br/>
+    <button class="delete-button" value="{{path}}">(D)elete</button>
   </div>
   {{/content}}
 </body>

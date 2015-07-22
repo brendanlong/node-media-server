@@ -4,6 +4,29 @@
   <meta charset="utf-8">
   <title>{{title}} - Recorded Content</title>
   <link rel="stylesheet" href="/static/css/styles.css?v=1.0">
+  <script src="/static/mousetrap.min.js"></script>
+  <script><!--
+    function playPause(e) {
+        var video = document.getElementsByClassName("mainvideo")[0];
+        if (video.paused) {
+            video.play();
+        } else {
+            video.pause();
+        }
+    }
+    
+    function deleteContent() {
+        var video = document.getElementsByClassName("mainvideo")[0];
+        var req = new XMLHttpRequest();
+        req.open("delete", video.src, false);
+        req.send();
+        location.href = document.referrer;
+    }
+
+    Mousetrap.bind("space", playPause);
+    Mousetrap.bind("d", deleteContent);
+    Mousetrap.bind(["esc", "backspace"], window.history.back.bind(window.history));
+  --></script>
 </head>
 <body>
   <video src="{{path}}" controls class="mainvideo">

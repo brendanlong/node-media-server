@@ -15,14 +15,19 @@ a {
 
 .content {
     display: block;
-    width: 50%;
-    height: 50vh;
+    width: 90%;
+    padding: 10px;
     float: left;
     text-align: center;
+    margin: 5vh;
 }
 
 .content video {
-    width: 100%;
+    width: 50%;
+}
+
+.selected {
+    background-color: blue;
 }
 
 .mainvideo {
