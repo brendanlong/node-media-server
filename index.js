@@ -3,8 +3,13 @@ var async = require("async");
 var express = require("express");
 var fs = require("fs");
 var http = require("http");
+var mime = require("mime");
+var mu = require("mu2");
 var path = require("path");
 var yargs = require("yargs");
+
+var thisPath = path.dirname(__filename);
+mu.root = path.join(thisPath, "templates");
 
 var args = yargs
     .option("d", {
@@ -37,12 +42,22 @@ app.get("/", function(req, res) {
                 });
             }, callback);
         }
-    ], function(err, results) {
-        if (err) {
-            return res.status(500).send(err);
+    ], function(files) {
+        var contentList = [];
+        for (var i = 0; i < files.length; ++i) {
+            var file = files[i];
+            var content = {
+                title: path.basename(file, path.extname(file)),
+                link: "/video?" + file
+            };
+            var type = mime.lookup(file);
+            contentList.push(content);
         }
-        res.status(200).send("yay" + results);
+        var stream = mu.compileAndRender("index.html", {content: contentList});
+        res.status(200);
+        stream.pipe(res);
     });
 });
-app.use(express.static(args.directory));
+app.use("/content", express.static(args.directory));
+app.use("/static", express.static(path.join(thisPath, "static")));
 app.listen(args.port);
