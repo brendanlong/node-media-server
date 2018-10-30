@@ -56,11 +56,15 @@ app.get("/", function(req, res) {
         var contentList = [];
         for (var i = 0; i < files.length; ++i) {
             var file = files[i];
-            var type = mime.lookup(file).split("/")[0];
+            var type = mime.getType(file);
+            if (type == null) {
+                continue;
+            }
+            var baseType = type.split("/")[0];
             var tag = null;
-            if (type == "audio" || type == "video") {
-                tag = type;
-            } else if (type == "image") {
+            if (baseType == "audio" || baseType == "video") {
+                tag = baseType;
+            } else if (baseType == "image") {
                 tag = "img";
             } else {
                 continue;
